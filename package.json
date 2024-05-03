@@ -1,5 +1,5 @@
 {
-  "name": "mantis-free-react-admin-template",
+  "name": "smartvest",
   "version": "1.2.0",
   "private": true,
   "homepage": "https://mantisdashboard.io/free",
@@ -23,6 +23,7 @@
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.1",
+    "react-chatbot-kit": "^2.2.2",
     "react-copy-to-clipboard": "^5.1.0",
     "react-device-detect": "^2.2.3",
     "react-dom": "^18.2.0",
