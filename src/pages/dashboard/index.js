@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import 'react-chatbot-kit/build/main.css';
 import './styles/override-bot.css';
 import { faker } from '@faker-js/faker';
+import { fetchCryptoData } from 'utils/cryptodata';
 
 // material-ui
 import {
@@ -26,6 +27,10 @@ import {config, MessageParser, ActionProvider} from "../../utils/chatbot.js";
 
 const DashboardDefault = () => {
   const [slot, setSlot] = useState('week');
+
+  useEffect(() => {
+    fetchCryptoData(["bitcion", "ethereum", "avalanche", "tron"]);
+  }, [])
 
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
@@ -81,7 +86,6 @@ const DashboardDefault = () => {
           </Box>
         </MainCard>
       </Grid>
-
 
       <Grid item xs={12} md={7} lg={4}>
           <AppNewsUpdate
