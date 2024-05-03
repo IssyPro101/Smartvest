@@ -2,7 +2,7 @@
   "name": "smartvest",
   "version": "1.2.0",
   "private": true,
-  "homepage": "https://mantisdashboard.io/free",
+  "homepage": "",
   "dependencies": {
     "@ant-design/colors": "^7.0.2",
     "@ant-design/icons": "^5.2.6",
