@@ -70,7 +70,7 @@ const DashboardDefault = () => {
             console.log(cryptoPrice.market_data.current_price.usd);
             console.log(cryptoPrice.price_change_percentage_24h);
             return (<Grid key={key} item xs={12} sm={6} md={4} lg={3}>
-              <CryptoPrice title={cryptoPrice.name} count={cryptoPrice.market_data.current_price.usd} percentage={cryptoPrice.market_data.price_change_percentage_24h} isLoss={cryptoPrice.market_data.price_change_percentage_24h < 0} color={cryptoPrice.market_data.price_change_percentage_24h < 0 ? "error" : "success"}/>
+              <CryptoPrice image={cryptoPrice.image.large} title={cryptoPrice.name} count={cryptoPrice.market_data.current_price.usd} percentage={cryptoPrice.market_data.price_change_percentage_24h} isLoss={cryptoPrice.market_data.price_change_percentage_24h < 0} color={cryptoPrice.market_data.price_change_percentage_24h < 0 ? "error" : "success"}/>
             </Grid>);
           }) : <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
      }
@@ -147,6 +147,7 @@ const DashboardDefault = () => {
             config={config}
             messageParser={MessageParser}
             actionProvider={ActionProvider}
+            headerText="Chat with Smartvest's Copilot"
           />
         </MainCard>
       </Grid>

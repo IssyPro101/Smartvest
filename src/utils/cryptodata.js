@@ -12,6 +12,8 @@ export const fetchCryptoData = async (coins) => {
                 headers: { accept: 'application/json', 'x-cg-demo-api-key': 'CG-mPnW1f6p1SgeWWwmLW5mvH41' }
             });
 
+            console.log(result);
+
             results.push(result.data);
         } catch (error) {
             console.error(error);
@@ -36,6 +38,7 @@ export const fetchCryptoChartData = async (coins) => {
             });
 
             console.log(result);
+            console.log("Dawd")
             results.push(result.data);
         } catch (error) {
             console.error(error);

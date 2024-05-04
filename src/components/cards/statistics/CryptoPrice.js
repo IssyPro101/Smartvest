@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 
 // material-ui
-import { Chip, Grid, Stack, Typography } from '@mui/material';
+import { Chip, Grid, Stack, Typography, Box } from '@mui/material';
 
 // project import
 import MainCard from 'components/MainCard';
@@ -11,9 +11,15 @@ import { RiseOutlined, FallOutlined } from '@ant-design/icons';
 
 // ==============================|| STATISTICS - ECOMMERCE CARD  ||============================== //
 
-const CryptoPrice = ({ color, title, count, percentage, isLoss }) => (
+const CryptoPrice = ({ color, title, count, percentage, isLoss, image }) => (
   <MainCard contentSX={{ p: 2.25 }}>
     <Stack spacing={0.5}>
+    <Box
+        component="img"
+        alt={title}
+        src={image}
+        sx={{ width: 48, height: 48, borderRadius: 1.5, flexShrink: 0 }}
+      />
       <Typography variant="h6" color="textSecondary">
         {title}
       </Typography>

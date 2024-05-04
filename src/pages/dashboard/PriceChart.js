@@ -7,6 +7,23 @@ import { useTheme } from '@mui/material/styles';
 // third-party
 import ReactApexChart from 'react-apexcharts';
 
+function formatDate(epochTimestamp) {
+  // Convert epoch timestamp to milliseconds
+  var date = new Date(epochTimestamp * 1000);
+  
+  // Get the day of the month
+  var dayOfMonth = date.getDate();
+
+  // Get the month name
+  var monthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  var monthName = monthNames[date.getMonth()];
+
+  // Return the formatted date
+  return dayOfMonth + " " + monthName;
+}
+
 // chart options
 const areaChartOptions = {
   chart: {
@@ -45,10 +62,14 @@ const PriceChart = ({ slot, series }) => {
       ...prevState,
       colors: [theme.palette.primary.main, theme.palette.primary[700]],
       xaxis: {
-        categories: series[0].prices.map((dp) => dp[0]),
+        categories: series[0].prices.map((dp) => formatDate(parseInt(dp[0]) / 1000)),
         axisBorder: {
           show: true,
           color: line
+        },
+        tickAmount: slot === 'month' ? 11 : 7,
+        labels: {
+          rotate: 360
         }
       },
       yaxis: {
