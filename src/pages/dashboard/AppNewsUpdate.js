@@ -53,7 +53,7 @@ AppNewsUpdate.propTypes = {
 // ----------------------------------------------------------------------
 
 function NewsItem({ news }) {
-  const { image, title, description, postedAt } = news;
+  const { image, title, description, postedAt, link } = news;
 
   return (
     <Stack direction="row" alignItems="center" spacing={2}>
@@ -65,7 +65,7 @@ function NewsItem({ news }) {
       />
 
       <Box sx={{ minWidth: 240, flexGrow: 1 }}>
-        <Link color="inherit" variant="subtitle2" underline="hover" noWrap>
+        <Link href={link} color="inherit" variant="subtitle2" underline="hover" target="_blank" rel="noopener" noWrap>
           {title}
         </Link>
 

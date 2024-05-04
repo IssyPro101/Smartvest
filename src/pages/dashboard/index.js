@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import 'react-chatbot-kit/build/main.css';
 import './styles/override-bot.css';
 import { faker } from '@faker-js/faker';
-import { fetchCryptoData } from 'utils/cryptodata';
+import { fetchCryptoData, fetchCryptoChartData, fetchCryptoNews } from 'utils/cryptodata';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
 
@@ -17,7 +17,7 @@ import {
 
 // project import
 import OrdersTable from './OrdersTable';
-import IncomeAreaChart from './IncomeAreaChart';
+import PriceChart from './PriceChart';
 import MainCard from 'components/MainCard';
 import CryptoPrice from 'components/cards/statistics/CryptoPrice';
 import Chatbot from "react-chatbot-kit";
@@ -30,6 +30,8 @@ import { config, MessageParser, ActionProvider } from "../../utils/chatbot.js";
 const DashboardDefault = () => {
   const [slot, setSlot] = useState('week');
   const [cryptoPrices, setCryptoPrices] = useState(null);
+  const [cryptoChartPrices, setCryptoChartPrices] = useState(null);
+  const [cryptoNews, setCryptoNews] = useState(null);
 
   useEffect(() => {
 
@@ -38,8 +40,20 @@ const DashboardDefault = () => {
       setCryptoPrices(data);
     }
 
+    const loadCryptoChartData = async () => {
+      const data = await fetchCryptoChartData(["bitcoin", "ethereum", "avalanche-2", "dogecoin"]);
+      setCryptoChartPrices(data);
+    }
+
+    const loadCryptoNews = async () => {
+      const data = await fetchCryptoNews();
+      setCryptoNews(data);
+
+    }
 
     loadCryptoData();
+    loadCryptoChartData();
+    loadCryptoNews();
 
   }, [])
 
@@ -67,7 +81,7 @@ const DashboardDefault = () => {
       <Grid item xs={12} md={7} lg={8}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
-            <Typography variant="h5">Unique Visitor</Typography>
+            <Typography variant="h5">Bitcoin Chart</Typography>
           </Grid>
           <Grid item>
             <Stack direction="row" alignItems="center" spacing={0}>
@@ -92,22 +106,23 @@ const DashboardDefault = () => {
         </Grid>
         <MainCard content={false} sx={{ mt: 1.5 }}>
           <Box sx={{ pt: 1, pr: 2 }}>
-            <IncomeAreaChart slot={slot} />
+            {cryptoChartPrices ? <PriceChart slot={slot} series={cryptoChartPrices}/> : <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />}
           </Box>
         </MainCard>
       </Grid>
 
       <Grid item xs={12} md={7} lg={4}>
-        <AppNewsUpdate
+        {cryptoNews ? <AppNewsUpdate
           title="News Update"
-          list={[...Array(5)].map((_, index) => ({
+          list={cryptoNews.map((data) => ({
             id: faker.string.uuid(),
-            title: faker.person.jobTitle(),
-            description: faker.commerce.productDescription(),
-            image: `/assets/images/covers/cover_${index + 1}.jpg`,
-            postedAt: faker.date.recent(),
+            title: data.title,
+            description: data.text,
+            image: data.image_url,
+            postedAt: data.date,
+            link: data.news_url
           }))}
-        />
+        /> : <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />}
       </Grid>
 
       {/* row 3 */}
