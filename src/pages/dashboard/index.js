@@ -34,7 +34,7 @@ const DashboardDefault = () => {
   useEffect(() => {
 
     const loadCryptoData = async () => {
-      const data = await fetchCryptoData(["bitcoin", "ethereum", "avalanche-2", "tron"]);
+      const data = await fetchCryptoData(["bitcoin", "ethereum", "avalanche-2", "dogecoin"]);
       setCryptoPrices(data);
     }
 
@@ -49,18 +49,17 @@ const DashboardDefault = () => {
       <Grid item xs={12} sx={{ mb: -2.25 }}>
         <Typography variant="h5">Dashboard</Typography>
       </Grid>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
-        {cryptoPrices ? <CryptoPrice title="Bitcoin" count={cryptoPrices.data['bitcoin'].usd} percentage={59.3} /> : <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />}
-      </Grid>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
-        {cryptoPrices ? <CryptoPrice title="Ethereum" count={cryptoPrices.data['ethereum'].usd} percentage={70.5} /> : <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />}
-      </Grid>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
-        {cryptoPrices ? <CryptoPrice title="Avalanche" count={cryptoPrices.data['avalanche-2'].usd} percentage={27.4} isLoss color="warning" /> : <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />}
-      </Grid>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
-        {cryptoPrices ? <CryptoPrice title="Tron" count={cryptoPrices.data['tron'].usd} percentage={27.4} isLoss color="warning" /> : <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />}
-      </Grid>
+
+      {
+        cryptoPrices ?
+          cryptoPrices.map((cryptoPrice, key) => {
+            console.log(cryptoPrice.market_data.current_price.usd);
+            console.log(cryptoPrice.price_change_percentage_24h);
+            return (<Grid key={key} item xs={12} sm={6} md={4} lg={3}>
+              <CryptoPrice title={cryptoPrice.name} count={cryptoPrice.market_data.current_price.usd} percentage={cryptoPrice.market_data.price_change_percentage_24h} isLoss={cryptoPrice.market_data.price_change_percentage_24h < 0} color={cryptoPrice.market_data.price_change_percentage_24h < 0 ? "error" : "success"}/>
+            </Grid>);
+          }) : <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+     }
 
       <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
 
