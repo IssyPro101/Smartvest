@@ -5,3 +5,7 @@
 .react-chatbot-kit-chat-header {
     font-family: 'Public Sans', sans-serif;
 }
+
+.react-chatbot-kit-chat-bot-message {
+    width: 100% !important;
+}

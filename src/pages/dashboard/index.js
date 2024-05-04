@@ -6,6 +6,10 @@ import { fetchCryptoData, fetchCryptoChartData, fetchCryptoNews, fetchYieldRates
 import { LoadingOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
 import OrdersTable from "../dashboard/OrdersTable";
+import { Popover } from 'antd';
+import SmartToyIcon from '@mui/icons-material/SmartToy';
+import Fab from '@mui/material/Fab';
+import Parser from "html-react-parser";
 
 // material-ui
 import {
@@ -33,17 +37,30 @@ const DashboardDefault = () => {
   const [cryptoChartPrices, setCryptoChartPrices] = useState(null);
   const [cryptoNews, setCryptoNews] = useState(null);
   const [cryptoYields, setCryptoYields] = useState(null);
+  const [coins, setCoins] = useState(["bitcoin", "ethereum", "avalanche-2", "dogecoin"]);
+
+  setCoins;
+
+  const [open, setOpen] = useState(false);
+
+  // const hide = () => {
+  //   setOpen(false);
+  // };
+
+  const handleOpenChange = (newOpen) => {
+    setOpen(newOpen);
+  };
 
   useEffect(() => {
 
     const loadCryptoData = async () => {
-      const data = await fetchCryptoData(["bitcoin", "ethereum", "avalanche-2", "dogecoin"]);
+      const data = await fetchCryptoData(coins);
 
       setCryptoPrices(data);
     }
 
     const loadCryptoChartData = async () => {
-      const data = await fetchCryptoChartData(["bitcoin", "ethereum", "avalanche-2", "dogecoin"]);
+      const data = await fetchCryptoChartData(coins);
 
       setCryptoChartPrices(data);
 
@@ -87,18 +104,15 @@ const DashboardDefault = () => {
           }) : <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
       }
 
-
-
-
       <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
 
       {/* row 2 */}
       <Grid item xs={12} md={7} lg={8}>
-      <Grid container alignItems="center" justifyContent="space-between">
+        <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
             <Typography variant="h5">Charts</Typography>
           </Grid>
-          { cryptoPrices && <Grid item>
+          {cryptoPrices && <Grid item>
             <Stack direction="row" alignItems="center" spacing={0}>
               {
                 cryptoPrices.map((price, key) => {
@@ -115,7 +129,7 @@ const DashboardDefault = () => {
                 })
               }
             </Stack>
-          </Grid> }
+          </Grid>}
         </Grid>
         <MainCard content={false} sx={{ mt: 1.5 }}>
           <Box sx={{ pt: 1, pr: 2 }}>
@@ -131,28 +145,6 @@ const DashboardDefault = () => {
 
       {/* row 4 */}
       <Grid item xs={12} md={5} lg={4}>
-        <MainCard sx={{ mt: 2 }}>
-          {cryptoChartPrices && cryptoNews ? <Chatbot
-            config={{
-              initialMessages: [],
-              state: {
-                context: {
-                  bitcoinPrice: cryptoChartPrices ? cryptoChartPrices["bitcoin"] : [],
-                  ethereumPrice: cryptoChartPrices ? cryptoChartPrices["ethereum"] : [],
-                  avaxPrice: cryptoChartPrices ? cryptoChartPrices["avalanche-2"] : [],
-                  dogePrice: cryptoChartPrices ? cryptoChartPrices["dogecoin"] : [],
-                  news: cryptoNews
-                }
-              }
-            }}
-            messageParser={MessageParser}
-            actionProvider={ActionProvider}
-            headerText="Chat with Smartvest's Copilot"
-          /> : <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />}
-        </MainCard>
-      </Grid>
-
-      <Grid item xs={12} md={7} lg={15}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
             <Typography variant="h5">USDC Yield Rates</Typography>
@@ -160,7 +152,7 @@ const DashboardDefault = () => {
           <Grid item />
         </Grid>
         <MainCard sx={{ mt: 2 }} content={false}>
-          {cryptoYields ? <OrdersTable yields={cryptoYields}/> : <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />}
+          {cryptoYields ? <OrdersTable yields={cryptoYields} /> : <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />}
         </MainCard>
       </Grid>
 
@@ -170,7 +162,7 @@ const DashboardDefault = () => {
           list={cryptoNews.map((data) => ({
             id: faker.string.uuid(),
             title: data.title,
-            description: data.metadata.description,
+            description: Parser(data.metadata.description),
             image: data.metadata.image,
             postedAt: data.createdAt,
             link: data.url
@@ -178,7 +170,38 @@ const DashboardDefault = () => {
         /> : <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />}
       </Grid>
 
+      <Popover
+        content={
+          <MainCard sx={{ mt: 2, width: "60vh"}} lg={15}>
+            {cryptoChartPrices && cryptoNews && cryptoYields ? <Chatbot
+              config={{
+                initialMessages: [],
+                state: {
+                  context: {
+                    bitcoinPrice: cryptoChartPrices["bitcoin"],
+                    ethereumPrice: cryptoChartPrices["ethereum"],
+                    avaxPrice: cryptoChartPrices["avalanche-2"],
+                    dogePrice: cryptoChartPrices["dogecoin"],
+                    news: cryptoNews,
+                    yields: cryptoYields
+                  }
+                }
+              }}
+              messageParser={MessageParser}
+              actionProvider={ActionProvider}
+              headerText="Chat with Smartvest's Copilot"
+            /> : <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />}
+          </MainCard>}
+        trigger="click"
+        open={open}
+        onOpenChange={handleOpenChange}
+        style={{width: "1000px"}}
+      >
 
+        <Fab color="primary" aria-label="add" sx={{ position: "fixed", bottom: "0%", right: "0%", mb: "4px", mr: "4px" }}>
+          <SmartToyIcon />
+        </Fab>
+      </Popover>
     </Grid>
   );
 };

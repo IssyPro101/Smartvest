@@ -1,29 +1,46 @@
 import React from "react";
 import axios from 'axios';
 
+const BASE_URL_COPILOT = process.env.REACT_APP_BASE_URL_COPILOT;
+
+const platformMap = {
+    "aa70268e-4b52-42bf-a116-608b370f9501": "AAVE V3 - Ethereum",
+    "7da72d09-56ca-4ec5-a45f-59114353e487": "Compound V3 - Ethereum",
+    "cefa9bb8-c230-459a-a855-3b94e96acd8c": "Compound V2 - Ethereum",
+    "a349fea4-d780-4e16-973e-70ca9b606db2": "AAVE V2 - Ethereum",
+    "7e0661bf-8cf3-45e6-9424-31916d4c7b84": "AAVE V3 - Base",
+    "0c8567f8-ba5b-41ad-80de-00a71895eb19": "Compound V3 - Base"
+}
+
+import {
+    createCustomMessage,
+  } from 'react-chatbot-kit';
+
 // MessageParser starter code
 export const MessageParser = ({ children, actions }) => {
     const parse = (message) => {
 
-      actions.handleMessage(message);
-      
+        actions.handleMessage(message);
+
     };
-  
+
     return (
-      <div>
-        {React.Children.map(children, (child) => {
-          return React.cloneElement(child, {
-            parse: parse,
-            actions,
-          });
-        })}
-      </div>
+        <div>
+            {React.Children.map(children, (child) => {
+                return React.cloneElement(child, {
+                    parse: parse,
+                    actions,
+                });
+            })}
+        </div>
     );
-  };
-  
-  // ActionProvider starter code
-  export const ActionProvider = ({ createChatBotMessage, setState, state, children }) => {
+};
+
+// ActionProvider starter code
+export const ActionProvider = ({ createChatBotMessage, setState, state, children }) => {
     const handleMessage = async (message) => {
+
+        console.log(createCustomMessage);
 
         console.log(state.context)
         const bitcoinPriceHistory = JSON.stringify(state.context.bitcoinPrice);
@@ -31,6 +48,12 @@ export const MessageParser = ({ children, actions }) => {
         const avaxPriceHistory = JSON.stringify(state.context.avaxPrice);
         const dogePriceHistory = JSON.stringify(state.context.dogePrice);
         const latestNews = JSON.stringify(state.context.news);
+        const usdcYields = JSON.stringify(state.context.yields.map((y) => {
+            return ({
+                "platform": platformMap[y.poolId],
+                "apy": y.apy
+            })
+        }));
 
         console.log(latestNews);
 
@@ -46,13 +69,13 @@ export const MessageParser = ({ children, actions }) => {
                         return {
                             "role": "human",
                             "content": message.message
-                        } 
+                        }
                     }
                 }),
-              {
-                role: 'human',
-                content: message,
-              }
+                {
+                    role: 'human',
+                    content: message,
+                }
             ],
             context: [
                 {
@@ -84,49 +107,47 @@ export const MessageParser = ({ children, actions }) => {
                     "name": "Latest Crypto News",
                     "description": "Contains an array of the latest news in the crypto industry. When giving this information make sure it is readable and not in JSON format.",
                     "content": latestNews,
+                },
+                {
+                    "uuid": "12345-41243",
+                    "name": "USDC Yield Rates",
+                    "description": "Contains an array of USDC yield rates from different DeFi platforms. When giving this information make sure it is readable and not in JSON format.",
+                    "content": usdcYields,
                 }
             ]
-          };
-          
+        };
+
         try {
-            const response = await axios.post(`http://localhost:7777/v1/query`, requestData, {
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              responseType: 'stream',
+            const response = await axios.post(`${BASE_URL_COPILOT}/v1/query`, requestData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                responseType: 'stream',
             });
 
             const botMessage = createChatBotMessage(response.data);
-  
+
             setState((prev) => ({
-              ...prev,
-              messages: [...prev.messages, botMessage],
+                ...prev,
+                messages: [...prev.messages, botMessage],
             }));
 
-          } catch (error) {
+        } catch (error) {
             console.error('Error:', error);
-          }
+        }
 
 
     };
-  
-    // Put the handleHello function in the actions object to pass to the MessageParser
-    return (
-      <div>
-        {React.Children.map(children, (child) => {
-          return React.cloneElement(child, {
-            actions: {
-                handleMessage,
-            },
-          });
-        })}
-      </div>
-    );
-  };
 
-  
-  // Config starter code
-  
-  export const config = {
-    initialMessages: []
-  }
+    return (
+        <div>
+            {React.Children.map(children, (child) => {
+                return React.cloneElement(child, {
+                    actions: {
+                        handleMessage,
+                    },
+                });
+            })}
+        </div>
+    );
+};

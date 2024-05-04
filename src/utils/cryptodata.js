@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+const CRYPTOPANIC_AUTH_TOKEN = process.env.REACT_APP_CRYPTOPANIC_AUTH_TOKEN;
+
 export const fetchCryptoData = async (coins) => {
 
     const results = [];
@@ -53,7 +55,7 @@ export const fetchCryptoChartData = async (coins) => {
 export const fetchCryptoNews = async () => {
 
 
-    const url = `http://localhost:5555/https://cryptopanic.com/api/v1/posts/?auth_token=844565ccd309b49fdbad68395f4b626e5e200ddb&public=true&metadata=true`;
+    const url = `http://localhost:5555/https://cryptopanic.com/api/v1/posts/?auth_token=${CRYPTOPANIC_AUTH_TOKEN}&public=true&metadata=true&kind=news`;
 
     try {
         const result = await axios.get(url, {
