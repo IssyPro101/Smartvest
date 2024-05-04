@@ -7,6 +7,13 @@ import { useTheme } from '@mui/material/styles';
 // third-party
 import ReactApexChart from 'react-apexcharts';
 
+const slotMap = {
+  "AVAX": "avalanche-2",
+  "BTC": "bitcoin",
+  "DOGE": "dogecoin",
+  "ETH": "ethereum"
+}
+
 function formatDate(epochTimestamp) {
   // Convert epoch timestamp to milliseconds
   var date = new Date(epochTimestamp * 1000);
@@ -55,19 +62,16 @@ const PriceChart = ({ slot, series }) => {
 
   const [options, setOptions] = useState(areaChartOptions);
 
-  console.log(series[0].prices.map((dp) => dp[1]))
-
   useEffect(() => {
     setOptions((prevState) => ({
       ...prevState,
       colors: [theme.palette.primary.main, theme.palette.primary[700]],
       xaxis: {
-        categories: series[0].prices.map((dp) => formatDate(parseInt(dp[0]) / 1000)),
+        categories: series[slotMap[slot]].map((dp) => formatDate(parseInt(dp[0]) / 1000)),
         axisBorder: {
           show: true,
           color: line
         },
-        tickAmount: slot === 'month' ? 11 : 7,
         labels: {
           rotate: 360
         }
@@ -88,7 +92,11 @@ const PriceChart = ({ slot, series }) => {
     }));
   }, [primary, secondary, line, theme, slot]);
 
-  return <ReactApexChart options={options} series={ [{name: "Price", data: series[0].prices.map((dp) => dp[1])}] } type="line" height={450} />;
+  console.log(slot);
+  console.log(slotMap[slot])
+  console.log(series[slotMap[slot]]);
+
+  return <ReactApexChart options={options} series={ [{name: "Price", data: series[slotMap[slot]].map((dp) => dp[1])}] } type="line" height={450} />;
 };
 
 PriceChart.propTypes = {
