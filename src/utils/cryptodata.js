@@ -8,8 +8,8 @@ export const fetchCryptoData = async (coins) => {
         const result = await axios.get(url, {
             headers: { accept: 'application/json', 'x-cg-demo-api-key': 'CG-mPnW1f6p1SgeWWwmLW5mvH41' }
         });
-
         console.log(result);
+        return result;
     } catch (error) {
         console.error(error);
     }

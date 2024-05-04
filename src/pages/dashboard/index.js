@@ -3,6 +3,8 @@ import 'react-chatbot-kit/build/main.css';
 import './styles/override-bot.css';
 import { faker } from '@faker-js/faker';
 import { fetchCryptoData } from 'utils/cryptodata';
+import { LoadingOutlined } from '@ant-design/icons';
+import { Spin } from 'antd';
 
 // material-ui
 import {
@@ -17,19 +19,28 @@ import {
 import OrdersTable from './OrdersTable';
 import IncomeAreaChart from './IncomeAreaChart';
 import MainCard from 'components/MainCard';
-import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
+import CryptoPrice from 'components/cards/statistics/CryptoPrice';
 import Chatbot from "react-chatbot-kit";
 import AppNewsUpdate from './AppNewsUpdate';
 
-import {config, MessageParser, ActionProvider} from "../../utils/chatbot.js";
+import { config, MessageParser, ActionProvider } from "../../utils/chatbot.js";
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
 const DashboardDefault = () => {
   const [slot, setSlot] = useState('week');
+  const [cryptoPrices, setCryptoPrices] = useState(null);
 
   useEffect(() => {
-    fetchCryptoData(["bitcion", "ethereum", "avalanche", "tron"]);
+
+    const loadCryptoData = async () => {
+      const data = await fetchCryptoData(["bitcoin", "ethereum", "avalanche-2", "tron"]);
+      setCryptoPrices(data);
+    }
+
+
+    loadCryptoData();
+
   }, [])
 
   return (
@@ -39,16 +50,16 @@ const DashboardDefault = () => {
         <Typography variant="h5">Dashboard</Typography>
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Total Page Views" count="4,42,236" percentage={59.3} extra="35,000" />
+        {cryptoPrices ? <CryptoPrice title="Bitcoin" count={cryptoPrices.data['bitcoin'].usd} percentage={59.3} /> : <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />}
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Total Users" count="78,250" percentage={70.5} extra="8,900" />
+        {cryptoPrices ? <CryptoPrice title="Ethereum" count={cryptoPrices.data['ethereum'].usd} percentage={70.5} /> : <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />}
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Total Order" count="18,800" percentage={27.4} isLoss color="warning" extra="1,943" />
+        {cryptoPrices ? <CryptoPrice title="Avalanche" count={cryptoPrices.data['avalanche-2'].usd} percentage={27.4} isLoss color="warning" /> : <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />}
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Total Sales" count="$35,078" percentage={27.4} isLoss color="warning" extra="$20,395" />
+        {cryptoPrices ? <CryptoPrice title="Tron" count={cryptoPrices.data['tron'].usd} percentage={27.4} isLoss color="warning" /> : <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />}
       </Grid>
 
       <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
@@ -88,17 +99,17 @@ const DashboardDefault = () => {
       </Grid>
 
       <Grid item xs={12} md={7} lg={4}>
-          <AppNewsUpdate
-            title="News Update"
-            list={[...Array(5)].map((_, index) => ({
-              id: faker.string.uuid(),
-              title: faker.person.jobTitle(),
-              description: faker.commerce.productDescription(),
-              image: `/assets/images/covers/cover_${index + 1}.jpg`,
-              postedAt: faker.date.recent(),
-            }))}
-          />
-        </Grid>
+        <AppNewsUpdate
+          title="News Update"
+          list={[...Array(5)].map((_, index) => ({
+            id: faker.string.uuid(),
+            title: faker.person.jobTitle(),
+            description: faker.commerce.productDescription(),
+            image: `/assets/images/covers/cover_${index + 1}.jpg`,
+            postedAt: faker.date.recent(),
+          }))}
+        />
+      </Grid>
 
       {/* row 3 */}
       <Grid item xs={12} md={7} lg={8}>
@@ -112,17 +123,17 @@ const DashboardDefault = () => {
           <OrdersTable />
         </MainCard>
       </Grid>
-  
+
 
 
       {/* row 4 */}
       <Grid item xs={12} md={5} lg={4}>
         <MainCard sx={{ mt: 2 }}>
-        <Chatbot
-          config={config}
-          messageParser={MessageParser}
-          actionProvider={ActionProvider}
-        />
+          <Chatbot
+            config={config}
+            messageParser={MessageParser}
+            actionProvider={ActionProvider}
+          />
         </MainCard>
       </Grid>
     </Grid>
