@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 
 // material-ui
-import { Box, Link, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Box, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 
 // third-party
 import { NumericFormat } from 'react-number-format';
@@ -11,22 +10,20 @@ import { NumericFormat } from 'react-number-format';
 // project import
 import Dot from 'components/@extended/Dot';
 
-function createData(trackingNo, name, fat, carbs, protein) {
-  return { trackingNo, name, fat, carbs, protein };
+const platformMap = {
+  "aa70268e-4b52-42bf-a116-608b370f9501": "AAVE V3 - Ethereum",
+  "7da72d09-56ca-4ec5-a45f-59114353e487": "Compound V3 - Ethereum",
+  "cefa9bb8-c230-459a-a855-3b94e96acd8c": "Compound V2 - Ethereum",
+  "a349fea4-d780-4e16-973e-70ca9b606db2": "AAVE V2 - Ethereum",
+  "7e0661bf-8cf3-45e6-9424-31916d4c7b84": "AAVE V3 - Base",
+  "0c8567f8-ba5b-41ad-80de-00a71895eb19": "Compound V3 - Base"
 }
 
-const rows = [
-  createData(84564564, 'Camera Lens', 40, 2, 40570),
-  createData(98764564, 'Laptop', 300, 0, 180139),
-  createData(98756325, 'Mobile', 355, 1, 90989),
-  createData(98652366, 'Handset', 50, 1, 10239),
-  createData(13286564, 'Computer Accessories', 100, 1, 83348),
-  createData(86739658, 'TV', 99, 0, 410780),
-  createData(13256498, 'Keyboard', 125, 2, 70999),
-  createData(98753263, 'Mouse', 89, 2, 10570),
-  createData(98753275, 'Desktop', 185, 1, 98063),
-  createData(98753291, 'Chair', 100, 0, 14001)
-];
+function createData(platform, yieldApy) {
+  return { platform, yieldApy };
+}
+
+
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -58,35 +55,16 @@ function stableSort(array, comparator) {
 
 const headCells = [
   {
-    id: 'trackingNo',
-    align: 'left',
-    disablePadding: false,
-    label: 'Tracking No.'
-  },
-  {
-    id: 'name',
+    id: 'platform',
     align: 'left',
     disablePadding: true,
-    label: 'Product Name'
+    label: 'Platform'
   },
   {
-    id: 'fat',
+    id: 'yieldApy',
     align: 'right',
     disablePadding: false,
-    label: 'Total Order'
-  },
-  {
-    id: 'carbs',
-    align: 'left',
-    disablePadding: false,
-
-    label: 'Status'
-  },
-  {
-    id: 'protein',
-    align: 'right',
-    disablePadding: false,
-    label: 'Total Amount'
+    label: 'Yield (APY)'
   }
 ];
 
@@ -154,12 +132,20 @@ OrderStatus.propTypes = {
 
 // ==============================|| ORDER TABLE ||============================== //
 
-export default function OrderTable() {
+export default function OrderTable({yields}) {
   const [order] = useState('asc');
-  const [orderBy] = useState('trackingNo');
+  const [orderBy] = useState('yieldApy');
   const [selected] = useState([]);
 
   const isSelected = (trackingNo) => selected.indexOf(trackingNo) !== -1;
+
+  console.log(yields);
+
+  const rows = [
+    ...yields.map((data) => {
+      return createData(platformMap[data.poolId], data.apy);
+    })
+  ];
 
   return (
     <Box>
@@ -186,9 +172,8 @@ export default function OrderTable() {
         >
           <OrderTableHead order={order} orderBy={orderBy} />
           <TableBody>
-            {stableSort(rows, getComparator(order, orderBy)).map((row, index) => {
-              const isItemSelected = isSelected(row.trackingNo);
-              const labelId = `enhanced-table-checkbox-${index}`;
+            {stableSort(rows, getComparator(order, orderBy)).map((row, key) => {
+              const isItemSelected = isSelected(row.yieldApy);
 
               return (
                 <TableRow
@@ -197,21 +182,12 @@ export default function OrderTable() {
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   aria-checked={isItemSelected}
                   tabIndex={-1}
-                  key={row.trackingNo}
+                  key={key}
                   selected={isItemSelected}
                 >
-                  <TableCell component="th" id={labelId} scope="row" align="left">
-                    <Link color="secondary" component={RouterLink} to="">
-                      {row.trackingNo}
-                    </Link>
-                  </TableCell>
-                  <TableCell align="left">{row.name}</TableCell>
-                  <TableCell align="right">{row.fat}</TableCell>
-                  <TableCell align="left">
-                    <OrderStatus status={row.carbs} />
-                  </TableCell>
+                  <TableCell align="left">{row.platform}</TableCell>
                   <TableCell align="right">
-                    <NumericFormat value={row.protein} displayType="text" thousandSeparator prefix="$" />
+                    <NumericFormat value={row.yieldApy} displayType="text" thousandSeparator suffix="%" />
                   </TableCell>
                 </TableRow>
               );
@@ -222,3 +198,8 @@ export default function OrderTable() {
     </Box>
   );
 }
+
+
+OrderTable.propTypes = {
+  yields: PropTypes.array
+};

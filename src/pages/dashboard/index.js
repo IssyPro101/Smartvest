@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import 'react-chatbot-kit/build/main.css';
 import './styles/override-bot.css';
 import { faker } from '@faker-js/faker';
-import { fetchCryptoData, fetchCryptoChartData, fetchCryptoNews } from 'utils/cryptodata';
+import { fetchCryptoData, fetchCryptoChartData, fetchCryptoNews, fetchYieldRates } from 'utils/cryptodata';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
 import OrdersTable from "../dashboard/OrdersTable";
@@ -32,6 +32,7 @@ const DashboardDefault = () => {
   const [cryptoPrices, setCryptoPrices] = useState(null);
   const [cryptoChartPrices, setCryptoChartPrices] = useState(null);
   const [cryptoNews, setCryptoNews] = useState(null);
+  const [cryptoYields, setCryptoYields] = useState(null);
 
   useEffect(() => {
 
@@ -56,11 +57,16 @@ const DashboardDefault = () => {
 
     }
 
+    const loadCryptoYields = async () => {
+      const data = await fetchYieldRates();
+      setCryptoYields(data);
+
+    }
+
     loadCryptoData();
     loadCryptoChartData();
     loadCryptoNews();
-
-
+    loadCryptoYields();
 
   }, [])
 
@@ -146,6 +152,18 @@ const DashboardDefault = () => {
         </MainCard>
       </Grid>
 
+      <Grid item xs={12} md={7} lg={15}>
+        <Grid container alignItems="center" justifyContent="space-between">
+          <Grid item>
+            <Typography variant="h5">USDC Yield Rates</Typography>
+          </Grid>
+          <Grid item />
+        </Grid>
+        <MainCard sx={{ mt: 2 }} content={false}>
+          {cryptoYields ? <OrdersTable yields={cryptoYields}/> : <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />}
+        </MainCard>
+      </Grid>
+
       <Grid item md={12}>
         {cryptoNews ? <AppNewsUpdate
           title="Latest News"
@@ -160,17 +178,7 @@ const DashboardDefault = () => {
         /> : <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />}
       </Grid>
 
-      <Grid item xs={12} md={7} lg={8}>
-        <Grid container alignItems="center" justifyContent="space-between">
-          <Grid item>
-            <Typography variant="h5">Recent Orders</Typography>
-          </Grid>
-          <Grid item />
-        </Grid>
-        <MainCard sx={{ mt: 2 }} content={false}>
-          <OrdersTable />
-        </MainCard>
-      </Grid>
+
     </Grid>
   );
 };

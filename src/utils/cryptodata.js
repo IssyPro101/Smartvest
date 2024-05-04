@@ -92,13 +92,16 @@ export const fetchYieldRates = async () => {
 
             console.log(result);
 
-            results.push(result);
+            results.push({poolId: poolIds[i], apy: result.data.data[result.data.data.length-1].apyBase});
 
-           
         } catch (error) {
             console.error(error);
         }  
     }
+
+    console.log(results);
+
+    return results;
 
 
 }
