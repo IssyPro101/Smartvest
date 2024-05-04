@@ -5,7 +5,7 @@ export const fetchCryptoData = async (coins) => {
     const results = [];
 
     for (let i = 0; i < coins.length; i++) {
-        const url = `https://api.coingecko.com/api/v3/coins/${coins[i]}`;
+        const url = `http://localhost:5555/https://api.coingecko.com/api/v3/coins/${coins[i]}`;
 
         try {
             const result = await axios.get(url, {
@@ -30,7 +30,7 @@ export const fetchCryptoChartData = async (coins) => {
     const results = [];
 
     for (let i = 0; i < coins.length; i++) {
-        const url = `https://api.coingecko.com/api/v3/coins/${coins[i]}/market_chart?vs_currency=usd&days=7`;
+        const url = `http://localhost:5555/https://api.coingecko.com/api/v3/coins/${coins[i]}/market_chart?vs_currency=usd&days=7&interval=daily`;
 
         try {
             const result = await axios.get(url, {
@@ -52,26 +52,19 @@ export const fetchCryptoChartData = async (coins) => {
 
 export const fetchCryptoNews = async () => {
 
-    const results = [];
 
-    for (let i = 0; i < 2; i++) {
-        const url = `https://cryptonews-api.com/api/v1/category?section=general&items=3&page=${i+1}&token=3rqmq1tlalskmnjzkzahg2sdzoecebkalsyhwxnm`;
+    const url = `http://localhost:5555/https://cryptopanic.com/api/v1/posts/?auth_token=844565ccd309b49fdbad68395f4b626e5e200ddb&public=true&metadata=true`;
 
-        try {
-            const result = await axios.get(url, {
-                headers: { accept: 'application/json', 'x-cg-demo-api-key': 'CG-mPnW1f6p1SgeWWwmLW5mvH41' }
-            });
-    
-            console.log(result.data.data);
-            results.push(...result.data.data);
-        } catch (error) {
-            console.error(error);
-        }  
-    }
+    try {
+        const result = await axios.get(url, {
+            headers: { accept: 'application/json'}
+        });
 
-
-    console.log(results);
-    return results;
+        console.log(result);
+        return result.data.results;
+    } catch (error) {
+        console.error(error);
+    }  
 
 
 }
